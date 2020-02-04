@@ -73,5 +73,14 @@ class Pelicula {
     }
   }
 
+  getBackgroundImg(){
+
+    if (backdropPath == null){
+      return 'https://portalvallenato.files.wordpress.com/2018/06/diomedes-dc3adaz-el-cacique-de-la-junta-vive-a-travc3a9s-de-sus-canciones.jpg?w=860';
+    } else{
+      return 'https://image.tmdb.org/t/p/w500/$backdropPath';
+    }
+  }
+
 }
 
