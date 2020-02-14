@@ -10,6 +10,7 @@ class PeliculasProvider{
   String _url      = 'api.themoviedb.org';
   String _language = 'es-ES';
 
+  //Peliculas Populares
   int _popularesPage = 0;
   bool _cargando = false;
 
@@ -88,4 +89,15 @@ class PeliculasProvider{
 
     return await _procesarRespuesta(url);
   }
+
+  Future <List<Pelicula>> getSimilares(String peliId) async{
+
+    final url = Uri.https(_url, '3/movie/$peliId/similar', {
+      'api_key'  : __apikey,
+      'language' : _language,
+    });
+
+    return await _procesarRespuesta(url);
+  }
+
 }

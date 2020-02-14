@@ -20,18 +20,23 @@ class PeliculaDetalle extends StatelessWidget {
                 SizedBox(height: 15.0,),
                 _posterTitulo(context, pelicula),
                 _descripcion(pelicula),
-                _descripcion(pelicula),
-                _descripcion(pelicula),
-                _descripcion(pelicula),
-                _descripcion(pelicula),
-                _descripcion(pelicula),
-                _descripcion(pelicula),
+                _getTitulo(context, 'Reparto'),
                 _crearCasting(pelicula),
+                _getTitulo(context, 'Otras personas también buscan'),
+                _crearSimilares(pelicula),
+                SizedBox(height: 15.0,),
               ]
             ),
           )
         ],
-      )
+      ),
+    );
+  }
+
+  Widget _getTitulo(BuildContext context, String titulo){
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+      child: Text(titulo, style: Theme.of(context).textTheme.subhead)
     );
   }
 
@@ -69,7 +74,7 @@ class PeliculaDetalle extends StatelessWidget {
               borderRadius: BorderRadius.circular(20.0),
               child: Image(
                 image: NetworkImage(pelicula.getPosterImg()),
-                height: 150.0,
+                height: 160.0,
               ),
             ),
           ),
@@ -96,7 +101,7 @@ class PeliculaDetalle extends StatelessWidget {
 
   Widget _descripcion(Pelicula pelicula) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 20.0),
+      padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 15.0),
       child: Text(
         pelicula.overview,
         textAlign: TextAlign.justify,
@@ -121,11 +126,11 @@ class PeliculaDetalle extends StatelessWidget {
 
   Widget _crearActoresPageView(List<Actor> actores) {
     return SizedBox(
-      height: 200.0,
+      height: 190.0,
       child: PageView.builder(
         pageSnapping: false,
         controller: PageController(
-          viewportFraction: 0.3,
+          viewportFraction: 0.33 ,
           initialPage: 1,
         ),
         itemCount: actores.length,
@@ -143,7 +148,7 @@ class PeliculaDetalle extends StatelessWidget {
             child: FadeInImage(
               image: NetworkImage(actor.getFoto()),
               placeholder: AssetImage('assets/img/no-image.jpg'),
-              height: 150.0,
+              height: 170.0,
               fit: BoxFit.cover,
             ),
           ),
@@ -156,4 +161,64 @@ class PeliculaDetalle extends StatelessWidget {
     );
   }
 
+
+  Widget _crearSimilares(Pelicula pelicula) {
+    final peliProvider = new PeliculasProvider();
+
+    return FutureBuilder(
+      future: peliProvider.getSimilares(pelicula.id.toString()),
+      builder: (context, AsyncSnapshot<List> snapshot) {
+        if(snapshot.hasData){
+          return _crearSimilaresPageView(snapshot.data);
+        } else{
+          return Center(child: CircularProgressIndicator(),);
+        }
+      },
+    );
+  }
+
+  Widget _crearSimilaresPageView(List<Pelicula> peliculas) {
+    return SizedBox(
+      height: 190.0,
+      child: PageView.builder(
+        pageSnapping: false,
+        controller: PageController(
+          viewportFraction: 0.33,
+          initialPage: 1,
+        ),
+        itemCount: peliculas.length,
+        itemBuilder: (context, i) =>_similaresTarjeta(context, peliculas[i]),
+      ),
+    );
+  }
+
+  Widget _similaresTarjeta(context, Pelicula pelicula){
+    pelicula.uniqueId = '${pelicula.id}-similar';
+
+    return Container(
+      child: Column(
+        children: <Widget>[
+          Hero(
+            tag: pelicula.uniqueId,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20.0),
+              child: GestureDetector(
+                onTap: () => Navigator.pushNamed(context, 'detalle', arguments: pelicula),
+                child: FadeInImage(
+                  image: NetworkImage(pelicula.getPosterImg()),
+                  placeholder: AssetImage('assets/img/no-image.jpg'),
+                  height: 170.0,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
+          Text(
+            pelicula.title,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
 }

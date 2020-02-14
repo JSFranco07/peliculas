@@ -49,7 +49,7 @@ class HomePage extends StatelessWidget {
       builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
 
         if(snapshot.hasData){
-          return  CardSwiper( peliculas: snapshot.data, );
+          return CardSwiper( peliculas: snapshot.data, );
         }else{
           return Container(
             height: 400.0,
